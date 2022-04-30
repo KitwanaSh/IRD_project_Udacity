@@ -1,4 +1,5 @@
-#DVD Rental Analysis Project In SQL
+# DVD Rental Analysis Project In SQL
+
 One of the criteria to graduate  at ***Udacity*** for the **Programming for
 Data Science _Nano Degree_** is to successfully complete the IRD project.
 This is the first project which focuses on _postgresql_. I work on several query
