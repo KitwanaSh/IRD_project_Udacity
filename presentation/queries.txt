@@ -1,0 +1,95 @@
+   				CODE FOR THE 1RST PRESENTATION
+   				 --------------------------------------------------
+
+SELECT f.title, cat.name, f.rental_duration as rt_duration,
+	   NTILE(4) OVER (ORDER BY f.rental_duration) AS std_quartile
+FROM category cat
+JOIN film_category fc
+ON cat.category_id = fc.category_id
+JOIN film f
+ON fc.film_id = f.film_id
+WHERE cat.name IN ('Family', 'Comedy', 'Animation', 'Children', 'Classics', 'Music')
+ORDER BY 3;
+
+   				 CODE FOR THE 2ND PRESENTATION
+   				 --------------------------------------------------
+
+SELECT DATE_PART('month', r.rental_date) AS rental_month,
+	   DATE_PART('year', r.rental_date) AS rental_year,
+	   s.store_id,
+	   COUNT(s.store_id) AS count_rental
+FROM rental r
+JOiN staff st
+ON r.staff_id = st.staff_id
+JOIN store s
+ON s.store_id = st.store_id
+GROUP BY 1,2,3
+ORDER BY 4 DESC;
+
+    				CODE FOR THE 3RD PRESENTATION
+    				--------------------------------------------------
+
+WITH tab1 AS (
+        SELECT c.first_name || ' ' || c.last_name AS fullname,
+        SUM(p.amount) AS amount_spent,
+        COUNT(p.payment_date) AS cntpay_year
+        FROM customer c
+        JOIN payment p
+        ON c.customer_id = p.customer_id
+        WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 10
+),
+tab2 AS (
+  SELECT c.first_name || ' ' || c.last_name AS fullname,
+  DATE_TRUNC('month', p.payment_date) AS monthly_pment,
+  SUM(p.amount) AS pay_amount,
+  COUNT(p.payment_date) AS pay_countpermon
+  FROM customer AS c
+  JOIN payment p
+  ON c.customer_id = p.customer_id
+  WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+  GROUP BY 1,2
+  ORDER BY 2 DESC
+)
+SELECT tab2.monthly_pment, tab1.fullname, tab2.pay_countpermon, tab2.pay_amount
+FROM tab1
+JOIN tab2
+ON tab1.fullname = tab2.fullname
+ORDER BY 2,1
+LIMIT 10;
+
+        				CODE FOR THE 4TH PRESENTATION
+        				-------------------------------------------------
+
+WITH tab1 AS (
+        SELECT c.first_name || ' ' || c.last_name AS fullname,
+        SUM(p.amount) AS amount_spent,
+        COUNT(p.payment_date) AS cntpay_year
+        FROM customer c
+        JOIN payment p
+        ON c.customer_id = p.customer_id
+        WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 10
+),
+tab2 AS (
+  SELECT c.first_name || ' ' || c.last_name AS fullname,
+  DATE_TRUNC('month', p.payment_date) AS monthly_pment,
+  SUM(p.amount) AS pay_amount,
+  COUNT(p.payment_date) AS pay_countpermon
+  FROM customer AS c
+  JOIN payment p
+  ON c.customer_id = p.customer_id
+  WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+  GROUP BY 1,2
+  ORDER BY 2 DESC
+)
+SELECT tab2.monthly_pment, tab1.fullname, tab2.pay_amount, tab2.pay_amount - LAG(tab2.pay_amount) OVER (ORDER BY tab2.monthly_pment) AS mnt_paydiff
+FROM tab1
+JOIN tab2
+ON tab1.fullname = tab2.fullname
+ORDER BY 2,1
+LIMIT 10;
