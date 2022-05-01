@@ -3,11 +3,12 @@
 One of the criteria to graduate  at ***Udacity*** for the **Programming for
 Data Science _Nano Degree_** is to successfully complete the IRD project.
 This is the first project which focuses on _postgresql_. I work on several query
-problem statements and save the solutions in csv files. After i get the SCVs,
+problem statements and save the solutions in csv files. After I get the SCVs,
 I make a quick `Visualization` using a DataViz of my choice.
 
-This project covers the important _postgresql_ `interview questions` by answering
-to the following statements:
+This project covers the important **Real World** `SQL questions` that usually
+come to _interviews_.
+I answer these `questions` using *sql* queries:
 
 - Create a query that lists each movie, the film category it is classified in, and
 the number of times it has been rented out. For this query, you will need 5 tables:
@@ -40,3 +41,39 @@ payment, and total payment amount for each month by these top 10 paying customer
 Repeat this for each of these 10 paying customers. Also, it will be tremendously
 helpful if you can identify the customer name who paid the most difference in terms
 of payments.
+
+## Datasets
+
+There in only `one (1)` dataset form which I extracted data that answer to the above
+questions. The dataset is **dvdrental.tar**.
+However, those answered questions are saved into __CSV__ files as follow:
+- set1 Qn1.csv
+- set1 Qn2.csv
+- set1 Qn3.csv
+- set2 Qn1.csv
+- set2 Qn2.csv
+- set2 Qn3.csv
+
+## Required Software
+
+Software that is used to manage databases is **called Database Management System**
+There are various **_Database Management System_** which are open source. In my case,
+I use [**PostgreSQL**](https://www.postgresql.org/?msclkid=3848f428c97c11ecbb8d9f18983f2d43).
+Once you have it installed in your PC, type `pdAdmin` in the search bar and open it.
+I should look like this:
+![pdAdmin image](img/pgAdmin_snapshot.PNG).
+### How to restore the database in pgAdmin
+The dvdrental.tar is the database to restore. (*do not unzip the file*)
+Check [here](https://www.geeksforgeeks.org/postgresql-restore-database/?msclkid=03ebd8a8c97f11ec968a8b251b023c27).
+
+## Acknowledgements
+
+I would like to thank **_Udacity and Access Bank_** for giving me this chance. With this scholarship,
+I am able to chase for a data science career. It is obvious that the journey is till long,
+but thanks to this __Programming For Data Science Nano Degree__, I will end up in
+a *data science role*.
+Of course, this is the final project, which is among the recommendation in order
+to actually graduate to the Nano degree. On behalf of scholars and everyone learning
+on the Udacity platform, We cannot thank you enough. You are among the industries
+that are making changes for the better future of this world!
+                               **_NeverStopLearning_**
