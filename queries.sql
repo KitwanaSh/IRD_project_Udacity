@@ -8,10 +8,10 @@ Film title, Category name and Count of Rentals.*/
 SELECT DISTINCT clss.movies, clss.category, clss.rental_counts
 FROM
    (SELECT re.rental_id,
-		cat.name,
-		f.title AS movies,
-	   	cat.name AS category,
-	   	COUNT(re.rental_id) OVER (PARTITION BY f.title) AS rental_counts
+		   cat.name,
+		   f.title AS movies,
+	   	   cat.name AS category,
+	   	   COUNT(re.rental_id) OVER (PARTITION BY f.title) AS rental_counts
 	FROM category cat
 	JOIN film_category fc
 	ON cat.category_id = fc.category_id
@@ -21,16 +21,18 @@ FROM
 	ON inv.film_id = f.film_id
 	JOIN rental re
 	ON re.inventory_id = inv.inventory_id
-  WHERE cat.name IN ('Family', 'Comedy', 'Animation', 'Children', 'Classics', 'Music')
+    WHERE cat.name IN ('Family', 'Comedy', 'Animation', 'Children', 'Classics', 'Music')
 	GROUP BY 1,2,3,4
-  ) AS clss
+   ) AS clss
 ORDER BY 2, 1;
 
 /*Now we need to know how the length of rental duration of these family-friendly movies compares to the duration that all movies are rented for. Can you provide a table with
 the movie titles and divide them into 4 levels (first_quarter, second_quarter, third_quarter, and final_quarter) based on the quartiles (25%, 50%, 75%) of the rental
 duration for movies across all categories? Make sure to also indicate the category that these family-friendly movies fall into. */
 
-SELECT f.title, cat.name, f.rental_duration as rt_duration,
+SELECT f.title, 
+       cat.name,
+       f.rental_duration as rt_duration,
 	   NTILE(4) OVER (ORDER BY f.rental_duration) AS std_quartile
 FROM category cat
 JOIN film_category fc
@@ -39,7 +41,6 @@ JOIN film f
 ON fc.film_id = f.film_id
 WHERE cat.name IN ('Family', 'Comedy', 'Animation', 'Children', 'Classics', 'Music')
 ORDER BY 3;
-
 
 /* Finally, provide a table with the family-friendly film category, each of the quartiles, and the corresponding count of movies within each combination of film category
 for each corresponding rental duration category. The resulting table should have three columns:
@@ -85,7 +86,6 @@ ORDER BY 4 DESC;
 
 /*We would like to know who were our top 10 paying customers, how many payments they made on a monthly basis during 2007, and what was the amount of the monthly payments.
 Can you write a query to capture the customer name, month and year of payment, and total payment amount for each month by these top 10 paying customers?*/
-
 WITH tab1 AS (
         SELECT c.first_name || ' ' || c.last_name AS fullname,
         SUM(p.amount) AS amount_spent,
@@ -97,20 +97,22 @@ WITH tab1 AS (
         GROUP BY 1
         ORDER BY 2 DESC
         LIMIT 10
-),
-tab2 AS (
-  SELECT c.first_name || ' ' || c.last_name AS fullname,
-  DATE_TRUNC('month', p.payment_date) AS monthly_pment,
-  SUM(p.amount) AS pay_amount,
-  COUNT(p.payment_date) AS pay_countpermon
-  FROM customer AS c
-  JOIN payment p
-  ON c.customer_id = p.customer_id
-  WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
-  GROUP BY 1,2
-  ORDER BY 2 DESC
-)
-SELECT tab2.monthly_pment, tab1.fullname, tab2.pay_countpermon, tab2.pay_amount
+             ),
+     tab2 AS (
+        SELECT c.first_name || ' ' || c.last_name AS fullname,
+        DATE_TRUNC('month', p.payment_date) AS monthly_pment,
+        SUM(p.amount) AS pay_amount,
+        COUNT(p.payment_date) AS pay_countpermon
+        FROM customer AS c
+        JOIN payment p
+        ON c.customer_id = p.customer_id
+        WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+        GROUP BY 1,2
+        ORDER BY 2 DESC)
+SELECT tab2.monthly_pment,
+       tab1.fullname,
+       tab2.pay_countpermon,
+       tab2.pay_amount
 FROM tab1
 JOIN tab2
 ON tab1.fullname = tab2.fullname
@@ -130,20 +132,22 @@ WITH tab1 AS (
         GROUP BY 1
         ORDER BY 2 DESC
         LIMIT 10
-),
-tab2 AS (
-  SELECT c.first_name || ' ' || c.last_name AS fullname,
-  DATE_TRUNC('month', p.payment_date) AS monthly_pment,
-  SUM(p.amount) AS pay_amount,
-  COUNT(p.payment_date) AS pay_countpermon
-  FROM customer AS c
-  JOIN payment p
-  ON c.customer_id = p.customer_id
-  WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
-  GROUP BY 1,2
-  ORDER BY 2 DESC
-)
-SELECT tab2.monthly_pment, tab1.fullname, tab2.pay_amount, tab2.pay_amount - LAG(tab2.pay_amount) OVER (ORDER BY tab2.monthly_pment) AS mnt_paydiff
+             ),
+     tab2 AS (
+        SELECT c.first_name || ' ' || c.last_name AS fullname,
+        DATE_TRUNC('month', p.payment_date) AS monthly_pment,
+        SUM(p.amount) AS pay_amount,
+        COUNT(p.payment_date) AS pay_countpermon
+        FROM customer AS c
+        JOIN payment p
+        ON c.customer_id = p.customer_id
+        WHERE p.payment_date BETWEEN '2007-01-01' AND '2007-12-31'
+        GROUP BY 1,2
+        ORDER BY 2 DESC)
+SELECT tab2.monthly_pment, 
+       tab1.fullname,
+       tab2.pay_amount,
+       tab2.pay_amount - LAG(tab2.pay_amount) OVER (ORDER BY tab2.monthly_pment) AS mnt_paydiff
 FROM tab1
 JOIN tab2
 ON tab1.fullname = tab2.fullname
