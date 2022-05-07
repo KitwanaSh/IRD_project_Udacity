@@ -69,7 +69,6 @@ ORDER BY 1,2;
 
 
 /* Questtion 2 */
-
 /*Write a query that returns the store ID for the store, the year and month and the number of rental orders each store has fulfilled for that month. Your table should
 include a column for each of the following: year, month, store ID and count of rental orders fulfilled during that month.*/
 SELECT DATE_PART('month', r.rental_date) AS rental_month,
@@ -150,36 +149,3 @@ JOIN tab2
 ON tab1.fullname = tab2.fullname
 ORDER BY 2,1
 LIMIT 10;
-
-
-/* Regarding Q1 from Set2, did you notice that we should not use the inventory table to obtain store information? the reason is that a customer can rent a movie in store 1, which can be
- physically stored in store 2. and vice versa.  */
-
-WITH T1 AS
-  (SELECT r.rental_id,
-          DATE_PART('month', rental_date) AS rental_month,
-          DATE_PART('year', rental_date) AS rental_year,
-          r.inventory_id,
-          i.store_id AS inventory_stored
-   FROM rental r
-   JOIN inventory i ON r.inventory_id = i.inventory_id),
-     T2 AS
-  (SELECT r.rental_id,
-          DATE_PART('month', rental_date) AS rental_month,
-          DATE_PART('year', rental_date) AS rental_year,
-          r.staff_id,
-          s.store_id AS staff_store
-   FROM rental r
-   JOIN staff st ON st.staff_id = r.staff_id
-   JOIN store s ON st.store_id = s.store_id)
-SELECT t1.rental_month,
-       t1.rental_year,
-       inventory_stored,
-       staff_store,
-       abs(sum(inventory_stored-staff_store)) AS "transferred movies"
-FROM t1
-JOIN t2 ON t1.rental_id = t2.rental_id
-GROUP BY t1.rental_month,
-         t1.rental_year,
-         inventory_stored,
-         staff_store
